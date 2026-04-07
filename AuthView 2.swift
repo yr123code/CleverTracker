@@ -12,11 +12,11 @@ struct AuthView: View {
         
         ZStack {
             
-            // 🔹 Hintergrund
+            // Hintergrund
             Color.blue
                 .ignoresSafeArea()
             
-            // 🔹 Inhalt mittig
+            // Inhalt mittig
             VStack(spacing: 20) {
                 
                 Text("Kalorien App")
@@ -48,7 +48,7 @@ struct AuthView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding()
             
-            // 🔹 Logo oben rechts (Overlay)
+            // Logo oben rechts (Overlay)
             VStack {
                 HStack {
                     Spacer()
