@@ -14,6 +14,7 @@
 		B27D1FC62F84EE500007B278 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27D1FC02F84EE500007B278 /* HomeView.swift */; };
 		B27D1FC72F84EE500007B278 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27D1FBC2F84EE500007B278 /* AuthView.swift */; };
 		B27D1FC82F84EE500007B278 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B27D1FBB2F84EE500007B278 /* Assets.xcassets */; };
+		B2E38EDD2F8A5DAF00B5DF6A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B2E38EDC2F8A5DAF00B5DF6A /* GoogleService-Info.plist */; };
 		B2E889472F7DB605009285E2 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B2E889462F7DB605009285E2 /* FirebaseAuth */; };
 		B2E889492F7DB605009285E2 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = B2E889482F7DB605009285E2 /* FirebaseFirestore */; };
 /* End PBXBuildFile section */
@@ -26,7 +27,8 @@
 		B27D1FBF2F84EE500007B278 /* Hauptseite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hauptseite.swift; sourceTree = "<group>"; };
 		B27D1FC02F84EE500007B278 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		B27D1FC12F84EE500007B278 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
-		B2E8892C2F7D73B6009285E2 /* CleverTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CleverTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2E38EDC2F8A5DAF00B5DF6A /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		B2E38EDE2F8A5DD700B5DF6A /* CleverTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CleverTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,16 +54,9 @@
 				B27D1FBF2F84EE500007B278 /* Hauptseite.swift */,
 				B27D1FC02F84EE500007B278 /* HomeView.swift */,
 				B27D1FC12F84EE500007B278 /* RootView.swift */,
-				B2E8892D2F7D73B6009285E2 /* Products */,
+				B2E38EDC2F8A5DAF00B5DF6A /* GoogleService-Info.plist */,
+				B2E38EDE2F8A5DD700B5DF6A /* CleverTracker.app */,
 			);
-			sourceTree = "<group>";
-		};
-		B2E8892D2F7D73B6009285E2 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				B2E8892C2F7D73B6009285E2 /* CleverTracker.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -85,7 +80,7 @@
 				B2E889482F7DB605009285E2 /* FirebaseFirestore */,
 			);
 			productName = CleverTracker;
-			productReference = B2E8892C2F7D73B6009285E2 /* CleverTracker.app */;
+			productReference = B2E38EDE2F8A5DD700B5DF6A /* CleverTracker.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -117,7 +112,7 @@
 				B2E889452F7DB605009285E2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = B2E8892D2F7D73B6009285E2 /* Products */;
+			productRefGroup = B2E889232F7D73B6009285E2;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -132,6 +127,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B27D1FC82F84EE500007B278 /* Assets.xcassets in Resources */,
+				B2E38EDD2F8A5DAF00B5DF6A /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

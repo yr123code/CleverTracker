@@ -19,10 +19,10 @@ struct AuthView: View {
             // Inhalt mittig
             VStack(spacing: 20) {
                 
-                Text("Kalorien App")
+                Text("Willkommen bei CleverTracker!")
                     .font(.largeTitle)
                     .bold()
-                
+                    
                 TextField("Email", text: $email)
                     .textFieldStyle(.roundedBorder)
                     .textInputAutocapitalization(.never)
@@ -39,11 +39,15 @@ struct AuthView: View {
                     authVM.login(email: email, password: password)
                 }
                 .buttonStyle(.borderedProminent)
+                .tint(Color.white)
+                .foregroundStyle(.black)
                 
                 Button("Registrieren") {
                     authVM.register(email: email, password: password)
                 }
                 .buttonStyle(.bordered)
+                .foregroundStyle(Color.black)
+                .tint(Color.white)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding()
@@ -51,14 +55,17 @@ struct AuthView: View {
             // Logo oben rechts (Overlay)
             VStack {
                 HStack {
+                    Image("HomeIconNew")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 60, height: 60)
                     Spacer()
-                    
                     Image("logo-colored-icons")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 60, height: 60)
-                        .padding()
                 }
+                .padding()
                 Spacer()
             }
         }

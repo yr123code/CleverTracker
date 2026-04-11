@@ -30,7 +30,7 @@ struct Hauptseite: View {
                 }
                 RoundedRectangle(cornerRadius: 20)
                     .fill(Color(.systemGray6).opacity(0.1))
-                    .stroke(Color.white
+                    .stroke(Color.white, lineWidth: 5)
                             //Muss noch weitergeschrieben werden
                 
                 Text("Kalorien Rechner")
