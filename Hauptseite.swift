@@ -27,10 +27,25 @@ struct Hauptseite: View {
                             .padding(.top)
                             .foregroundColor(.white)
                         
-                        Text(authVM.user?.email ?? "Keine Email")
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .padding(.top)
-                            .foregroundColor(.white)
+                        HStack(spacing: 10) {
+                            Button(action: {
+                                signOut()
+                            }) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.white.opacity(0.2))
+                                        .frame(width: 32, height: 32)
+                                    Image(systemName: "power")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 14, weight: .bold))
+                                }
+                            }
+                            
+                            Text(authVM.user?.email ?? "Keine Email")
+                                .foregroundColor(.white)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .padding(.top)
                     }
                     
                     Spacer()
@@ -143,6 +158,15 @@ struct Hauptseite: View {
                     resultCalories = c
                 }
             }
+        }
+    }
+    
+    func signOut() {
+        do {
+            try Auth.auth().signOut()
+            authVM.user = nil
+        } catch {
+            print("Fehler beim Logout: \(error.localizedDescription)")
         }
     }
 }
