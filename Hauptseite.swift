@@ -150,26 +150,71 @@ struct Hauptseite: View {
 // MARK: - RESULT VIEW
 struct ErgebnisView: View {
     var calories: Double
-
+    
     var body: some View {
         ZStack(alignment: .top) {
             Color.blue
                 .ignoresSafeArea()
-
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.white.opacity(0.1))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.white, lineWidth: 3)
-                )
-                .frame(height: 150)
-                .padding()
-
-            Text("Dein Bedarf: \(Int(calories)) kcal")
-                .font(.largeTitle)
-                .bold()
-                .foregroundColor(.white)
-                .padding(.top, 80)
+            VStack(spacing:20) {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.white.opacity(0.1))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Color.white, lineWidth: 3)
+                    )
+                    .overlay(
+                        Text("Dein Bedarf: \(Int(calories)) kcal")
+                            .font(.system(size: 28, weight: .bold))
+                            .bold()
+                            .foregroundColor(.white)
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 70)
+                    .padding()
+                Text("Ernährung")
+                    .font(.system(size:28, weight: .bold))
+                    .padding()
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                RoundedRectangle(cornerRadius:20)
+                    .fill(Color.white.opacity(0.1))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 330)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Color.white, lineWidth: 3)
+                    )
+                    .overlay(
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Frühstück")
+                                .font(.system(size:20, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(20)
+                            Color.white
+                                .frame(height: 5)
+                                .frame(maxWidth: .infinity)
+                            Text("Mittagessen")
+                                .font(.system(size:20, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(20)
+                            Color.white
+                                .frame(height: 5)
+                                .frame(maxWidth: .infinity)
+                            Text("Abendessen")
+                                .font(.system(size:20, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(20)
+                            Color.white
+                                .frame(height: 5)
+                                .frame(maxWidth: .infinity)
+                            Text("Snacks")
+                                .font(.system(size:20, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(20)
+                        },
+                        alignment: .topLeading
+                    )
+            }
         }
     }
 }
