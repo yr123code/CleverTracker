@@ -11,7 +11,7 @@ struct Hauptseite: View {
     @State private var activity: Double = 1.2
     @State private var resultCalories: Double = 0
     @State private var navigateToResult = false
-
+    @State private var showInfo = false
     @EnvironmentObject var authVM: AuthViewModel
 
     var body: some View {
@@ -78,9 +78,26 @@ struct Hauptseite: View {
                         
                         Slider(value: $activity, in: 1.2...1.9, step: 0.1)
                         
-                        Text("Aktivität: \(activity, specifier: "%.1f")")
-                            .foregroundColor(.white)
-                        
+                        HStack{
+                            Text("Aktivität: \(activity, specifier: "%.1f")")
+                                .foregroundColor(.white)
+                            Button(action: {
+                                showInfo = true
+                            }) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.white.opacity(0.2))
+                                        .frame(width: 24, height: 24)
+                                    Image(systemName: "info")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 12, weight: .bold))
+                                }
+                            }
+                        }
+                        .sheet(isPresented: $showInfo) {
+                            InfoView()
+                        }
+                        .presentationBackground(.clear)
                         Button("Kalorien berechnen") {
                             calculateCalories()
                             navigateToResult = true
@@ -175,6 +192,28 @@ struct Hauptseite: View {
 struct ErgebnisView: View {
     var calories: Double
     
+    @State private var selectedMeal: String? = nil
+    @State private var meals: [String: [String]] = [
+        "Frühstück": [],
+        "Mittagessen": [],
+        "Abendessen": [],
+        "Snacks": []
+    ]
+    
+    var consumedCalories: Int {
+        meals.values.flatMap { $0 }.reduce(0) { total, item in
+            if let kcalString = item.components(separatedBy: "=").last {
+                let cleaned = kcalString
+                    .replacingOccurrences(of: "kcal", with: "")
+                    .trimmingCharacters(in: .whitespaces)
+                if let kcal = Int(cleaned) {
+                    return total + kcal
+                }
+            }
+            return total
+        }
+    }
+    
     var body: some View {
         ZStack(alignment: .top) {
             Color.blue
@@ -187,13 +226,19 @@ struct ErgebnisView: View {
                             .stroke(Color.white, lineWidth: 3)
                     )
                     .overlay(
-                        Text("Dein Bedarf: \(Int(calories)) kcal")
-                            .font(.system(size: 28, weight: .bold))
-                            .bold()
-                            .foregroundColor(.white)
+                        VStack {
+                            Text("Dein Bedarf: \(Int(calories) - consumedCalories) kcal")
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundColor(.white)
+                            
+                            ForEach(meals.values.flatMap { $0 }, id: \.self) { item in
+                                Text("• \(item)")
+                                    .foregroundColor(.white)
+                            }
+                        }
                     )
                     .frame(maxWidth: .infinity)
-                    .frame(height: 70)
+                    .frame(minHeight: 125)
                     .padding()
                 Text("Ernährung")
                     .font(.system(size:28, weight: .bold))
@@ -210,35 +255,146 @@ struct ErgebnisView: View {
                     )
                     .overlay(
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Frühstück")
-                                .font(.system(size:20, weight: .bold))
+                            HStack {
+                                Text("Frühstück")
+                                    .font(.system(size:20, weight: .bold))
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Button("+") {
+                                    selectedMeal = "Frühstück"
+                                }
                                 .foregroundColor(.white)
-                                .padding(20)
+                            }
+                            .padding(20)
                             Color.white
                                 .frame(height: 5)
                                 .frame(maxWidth: .infinity)
-                            Text("Mittagessen")
-                                .font(.system(size:20, weight: .bold))
+                            HStack {
+                                Text("Mittagessen")
+                                    .font(.system(size:20, weight: .bold))
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Button("+") {
+                                    selectedMeal = "Mittagessen"
+                                }
                                 .foregroundColor(.white)
-                                .padding(20)
+                            }
+                            .padding(20)
                             Color.white
                                 .frame(height: 5)
                                 .frame(maxWidth: .infinity)
-                            Text("Abendessen")
-                                .font(.system(size:20, weight: .bold))
+                            HStack {
+                                Text("Abendessen")
+                                    .font(.system(size:20, weight: .bold))
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Button("+") {
+                                    selectedMeal = "Abendessen"
+                                }
                                 .foregroundColor(.white)
-                                .padding(20)
+                            }
+                            .padding(20)
                             Color.white
                                 .frame(height: 5)
                                 .frame(maxWidth: .infinity)
-                            Text("Snacks")
-                                .font(.system(size:20, weight: .bold))
+                            HStack {
+                                Text("Snacks")
+                                    .font(.system(size:20, weight: .bold))
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Button("+") {
+                                    selectedMeal = "Snacks"
+                                }
                                 .foregroundColor(.white)
-                                .padding(20)
+                            }
+                            .padding(20)
                         },
                         alignment: .topLeading
                     )
             }
+            NavigationLink(
+                destination: AddFoodView(selectedMeal: $selectedMeal, meals: $meals),
+                isActive: Binding(
+                    get: { selectedMeal != nil },
+                    set: { if !$0 { selectedMeal = nil } }
+                )
+            ) {
+                EmptyView()
+            }
         }
     }
+}
+
+struct AddFoodView: View {
+    @Binding var selectedMeal: String?
+    @Binding var meals: [String: [String]]
+    @State private var bananaCount = 1
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Lebensmittel auswählen")
+                .font(.largeTitle)
+
+            List {
+                HStack {
+                    Text("Banane")
+
+                    Spacer()
+
+                    Stepper(value: $bananaCount, in: 1...10) {
+                        Text("\(bananaCount)")
+                    }
+
+                    Button("✓") {
+                        let kcal = bananaCount * 100
+                        let text = "Banane x\(bananaCount) = \(kcal) kcal"
+
+                        if let meal = selectedMeal {
+                            meals[meal, default: []].append(text)
+                        }
+
+                        selectedMeal = nil
+                    }
+                    .foregroundColor(.green)
+                }
+            }
+        }
+    }
+}
+struct InfoView: View {
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+
+            VStack(spacing: 20) {
+                Text("Aktivitätslevel Info")
+                    .font(.headline)
+                    .bold()
+
+                Text("1.2 = wenig Bewegung\n1.5 = moderat aktiv\n1.9 = sehr aktiv")
+                    .multilineTextAlignment(.center)
+
+                Button("Schließen") {
+                    dismiss()
+                }
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+            .padding()
+            .background(Color.white)
+            .cornerRadius(20)
+            .frame(maxWidth: 300)
+        }
+        .presentationBackground(.clear)
+    }
+    
+
+    @Environment(\.dismiss) var dismiss
+}
+#Preview {
+    Hauptseite()
+        .environmentObject(AuthViewModel())
 }
