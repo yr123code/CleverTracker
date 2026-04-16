@@ -50,8 +50,22 @@ struct Hauptseite: View {
                     
                     Spacer()
                     
+                    
                     // CALCULATOR
                     VStack(spacing: 15) {
+                        HStack{
+                            Button("Zu meiner Übersicht"){
+                                navigateToResult = true
+                            }
+                            .padding()
+                            .foregroundStyle(Color.white)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(Color.white, lineWidth: 3)
+                            )
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding()
+                        }
                         
                         Text("Kalorien Rechner")
                             .font(.largeTitle)
@@ -122,6 +136,7 @@ struct Hauptseite: View {
             // Navigation zum ErgebnisView
             NavigationLink("", isActive: $navigateToResult) {
                 ErgebnisView(calories: resultCalories)
+                    .environmentObject(authVM)
             }
         }
     .background(Color.blue.ignoresSafeArea())
@@ -192,13 +207,28 @@ struct Hauptseite: View {
 struct ErgebnisView: View {
     var calories: Double
     
+    @EnvironmentObject var authVM: AuthViewModel
+    
     @State private var selectedMeal: String? = nil
-    @State private var meals: [String: [String]] = [
-        "Frühstück": [],
-        "Mittagessen": [],
-        "Abendessen": [],
-        "Snacks": []
-    ]
+    @State private var mealsByDate: [String: [String: [String]]] = [:]
+    
+    var todayKey: String {
+        Date().formatted(date: .numeric, time: .omitted)
+    }
+    
+    var meals: [String: [String]] {
+        get {
+            mealsByDate[todayKey] ?? [
+                "Frühstück": [],
+                "Mittagessen": [],
+                "Abendessen": [],
+                "Snacks": []
+            ]
+        }
+        set {
+            mealsByDate[todayKey] = newValue
+        }
+    }
     
     var consumedCalories: Int {
         meals.values.flatMap { $0 }.reduce(0) { total, item in
@@ -214,11 +244,47 @@ struct ErgebnisView: View {
         }
     }
     
+    func saveMeals() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        Firestore.firestore().collection("users").document(uid).setData([
+            "mealsByDate": mealsByDate
+        ], merge: true)
+    }
+
+    func loadMeals() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        Firestore.firestore().collection("users").document(uid).getDocument { snapshot, _ in
+            if let data = snapshot?.data(),
+               let saved = data["mealsByDate"] as? [String: [String: [String]]] {
+                mealsByDate = saved
+            }
+        }
+    }
+    
     var body: some View {
         ZStack(alignment: .top) {
             Color.blue
                 .ignoresSafeArea()
             VStack(spacing:20) {
+                NavigationLink(destination: HistoryView(mealsByDate: mealsByDate)) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "clock.arrow.circlepath")
+                            .foregroundColor(.white)
+                        Text("Verlauf")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(Color.white.opacity(0.15))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(Color.white.opacity(0.6), lineWidth: 1)
+                    )
+                }
                 RoundedRectangle(cornerRadius: 20)
                     .fill(Color.white.opacity(0.1))
                     .overlay(
@@ -226,14 +292,22 @@ struct ErgebnisView: View {
                             .stroke(Color.white, lineWidth: 3)
                     )
                     .overlay(
-                        VStack {
+                        VStack(alignment: .leading) {
                             Text("Dein Bedarf: \(Int(calories) - consumedCalories) kcal")
                                 .font(.system(size: 28, weight: .bold))
                                 .foregroundColor(.white)
-                            
-                            ForEach(meals.values.flatMap { $0 }, id: \.self) { item in
-                                Text("• \(item)")
-                                    .foregroundColor(.white)
+
+                            ForEach(["Frühstück","Mittagessen","Abendessen","Snacks"], id: \.self) { meal in
+                                if let items = meals[meal], !items.isEmpty {
+                                    Text(meal + ":")
+                                        .bold()
+                                        .foregroundColor(.white)
+
+                                    ForEach(items, id: \.self) { item in
+                                        Text("• \(item)")
+                                            .foregroundColor(.white)
+                                    }
+                                }
                             }
                         }
                     )
@@ -312,8 +386,28 @@ struct ErgebnisView: View {
                         alignment: .topLeading
                     )
             }
+            .onAppear {
+                loadMeals()
+            }
             NavigationLink(
-                destination: AddFoodView(selectedMeal: $selectedMeal, meals: $meals),
+                destination: AddFoodView(
+                    selectedMeal: $selectedMeal,
+                    meals: Binding(
+                        get: {
+                            mealsByDate[todayKey] ?? [
+                                "Frühstück": [],
+                                "Mittagessen": [],
+                                "Abendessen": [],
+                                "Snacks": []
+                            ]
+                        },
+                        set: { newValue in
+                            mealsByDate[todayKey] = newValue
+                        }
+                    ),
+                    mealsByDate: $mealsByDate
+                )
+                    .environmentObject(authVM),
                 isActive: Binding(
                     get: { selectedMeal != nil },
                     set: { if !$0 { selectedMeal = nil } }
@@ -328,7 +422,7 @@ struct ErgebnisView: View {
 struct AddFoodView: View {
     @Binding var selectedMeal: String?
     @Binding var meals: [String: [String]]
-    @State private var bananaCount = 1
+    @Binding var mealsByDate: [String: [String: [String]]]
 
     var body: some View {
         VStack(spacing: 20) {
@@ -336,28 +430,46 @@ struct AddFoodView: View {
                 .font(.largeTitle)
 
             List {
-                HStack {
-                    Text("Banane")
-
-                    Spacer()
-
-                    Stepper(value: $bananaCount, in: 1...10) {
-                        Text("\(bananaCount)")
-                    }
-
-                    Button("✓") {
-                        let kcal = bananaCount * 100
-                        let text = "Banane x\(bananaCount) = \(kcal) kcal"
-
-                        if let meal = selectedMeal {
-                            meals[meal, default: []].append(text)
-                        }
-
-                        selectedMeal = nil
-                    }
-                    .foregroundColor(.green)
-                }
+                FoodRowView(name: "Banane", kcalPerUnit: 100, selectedMeal: $selectedMeal, meals: $meals, mealsByDate: $mealsByDate)
+                FoodRowView(name: "Reis (gekocht, Handvoll)", kcalPerUnit: 130, selectedMeal: $selectedMeal, meals: $meals, mealsByDate: $mealsByDate)
+                FoodRowView(name: "Hähnchenbrust (150g)", kcalPerUnit: 250, selectedMeal: $selectedMeal, meals: $meals, mealsByDate: $mealsByDate)
+                FoodRowView(name: "Brokkoli (Portion)", kcalPerUnit: 50, selectedMeal: $selectedMeal, meals: $meals, mealsByDate: $mealsByDate)
+                FoodRowView(name: "Avocado (halbe)", kcalPerUnit: 120, selectedMeal: $selectedMeal, meals: $meals, mealsByDate: $mealsByDate)
+                FoodRowView(name: "Schokolade (Riegel)", kcalPerUnit: 230, selectedMeal: $selectedMeal, meals: $meals, mealsByDate: $mealsByDate)
             }
+        }
+    }
+}
+
+struct FoodRowView: View {
+    let name: String
+    let kcalPerUnit: Int
+    @Binding var selectedMeal: String?
+    @Binding var meals: [String: [String]]
+    @Binding var mealsByDate: [String: [String: [String]]]
+    @State private var count = 1
+
+    var body: some View {
+        HStack {
+            Text(name)
+            Spacer()
+            Stepper(value: $count, in: 1...10) {
+                Text("\(count)")
+            }
+            Button("✓") {
+                let kcal = count * kcalPerUnit
+                let text = "\(name) x\(count) = \(kcal) kcal"
+                if let meal = selectedMeal {
+                    meals[meal, default: []].append(text)
+                }
+                if let uid = Auth.auth().currentUser?.uid {
+                    Firestore.firestore().collection("users").document(uid).setData([
+                        "mealsByDate": mealsByDate
+                    ], merge: true)
+                }
+                selectedMeal = nil
+            }
+            .foregroundColor(.green)
         }
     }
 }
@@ -398,3 +510,29 @@ struct InfoView: View {
     Hauptseite()
         .environmentObject(AuthViewModel())
 }
+
+struct HistoryView: View {
+    var mealsByDate: [String: [String: [String]]]
+
+    var body: some View {
+        List {
+            ForEach(mealsByDate.keys.sorted(by: >), id: \.self) { date in
+                Section(header: Text(date)) {
+                    let meals = mealsByDate[date] ?? [:]
+
+                    ForEach(["Frühstück","Mittagessen","Abendessen","Snacks"], id: \.self) { meal in
+                        if let items = meals[meal], !items.isEmpty {
+                            Text(meal)
+                                .font(.headline)
+
+                            ForEach(items, id: \.self) { item in
+                                Text("• \(item)")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
