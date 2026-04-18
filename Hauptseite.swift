@@ -213,7 +213,9 @@ struct ErgebnisView: View {
     @State private var mealsByDate: [String: [String: [String]]] = [:]
     
     var todayKey: String {
-        Date().formatted(date: .numeric, time: .omitted)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: Date())
     }
     
     var meals: [String: [String]] {
@@ -243,6 +245,22 @@ struct ErgebnisView: View {
             return total
         }
     }
+
+    var mealSuggestions: [String] {
+        let remaining = Int(calories) - consumedCalories
+
+        if remaining <= 0 {
+            return ["Kein weiterer Bedarf heute"]
+        } else if remaining < 300 {
+            return ["Apfel (80 kcal)", "Joghurt (120 kcal)"]
+        } else if remaining < 600 {
+            return ["Banane + Joghurt (220 kcal)", "Avocado Snack (250 kcal)"]
+        } else if remaining < 1000 {
+            return ["Hähnchen mit Brokkoli (400 kcal)", "Reis mit Gemüse (500 kcal)"]
+        } else {
+            return ["Ausgewogene Mahlzeit (Protein, Kohlenhydrate, Fett)"]
+        }
+    }
     
     func saveMeals() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
@@ -265,34 +283,34 @@ struct ErgebnisView: View {
         ZStack(alignment: .top) {
             Color.blue
                 .ignoresSafeArea()
-            VStack(spacing:20) {
-                NavigationLink(destination: HistoryView(mealsByDate: mealsByDate)) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "clock.arrow.circlepath")
-                            .foregroundColor(.white)
-                        Text("Verlauf")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
+            ScrollView {
+                VStack(spacing:20) {
+                    NavigationLink(destination: HistoryView(mealsByDate: mealsByDate)) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "clock.arrow.circlepath")
+                                .foregroundColor(.white)
+                            Text("Verlauf")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(.white)
+                        }
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 14)
+                                .fill(Color.white.opacity(0.15))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(Color.white.opacity(0.6), lineWidth: 1)
+                        )
                     }
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(Color.white.opacity(0.15))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(Color.white.opacity(0.6), lineWidth: 1)
-                    )
-                }
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.white.opacity(0.1))
-                    .overlay(
+                    ZStack(alignment: .topLeading) {
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.white.opacity(0.1))
                         RoundedRectangle(cornerRadius: 20)
                             .stroke(Color.white, lineWidth: 3)
-                    )
-                    .overlay(
-                        VStack(alignment: .leading) {
+
+                        VStack(alignment: .leading, spacing: 8) {
                             Text("Dein Bedarf: \(Int(calories) - consumedCalories) kcal")
                                 .font(.system(size: 28, weight: .bold))
                                 .foregroundColor(.white)
@@ -309,82 +327,93 @@ struct ErgebnisView: View {
                                     }
                                 }
                             }
+
+                            Text("Mahlzeitenvorschläge:")
+                                .bold()
+                                .foregroundColor(.white)
+                                .padding(.top, 10)
+
+                            ForEach(mealSuggestions, id: \.self) { suggestion in
+                                Text("• \(suggestion)")
+                                    .foregroundColor(.white.opacity(0.8))
+                            }
                         }
-                    )
+                        .padding()
+                    }
                     .frame(maxWidth: .infinity)
-                    .frame(minHeight: 125)
                     .padding()
-                Text("Ernährung")
-                    .font(.system(size:28, weight: .bold))
-                    .padding()
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                RoundedRectangle(cornerRadius:20)
-                    .fill(Color.white.opacity(0.1))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 330)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(Color.white, lineWidth: 3)
-                    )
-                    .overlay(
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Text("Frühstück")
-                                    .font(.system(size:20, weight: .bold))
+                    Text("Ernährung")
+                        .font(.system(size:28, weight: .bold))
+                        .padding()
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    RoundedRectangle(cornerRadius:20)
+                        .fill(Color.white.opacity(0.1))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 330)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Color.white, lineWidth: 3)
+                        )
+                        .overlay(
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Text("Frühstück")
+                                        .font(.system(size:20, weight: .bold))
+                                        .foregroundColor(.white)
+                                    Spacer()
+                                    Button("+") {
+                                        selectedMeal = "Frühstück"
+                                    }
                                     .foregroundColor(.white)
-                                Spacer()
-                                Button("+") {
-                                    selectedMeal = "Frühstück"
                                 }
-                                .foregroundColor(.white)
-                            }
-                            .padding(20)
-                            Color.white
-                                .frame(height: 5)
-                                .frame(maxWidth: .infinity)
-                            HStack {
-                                Text("Mittagessen")
-                                    .font(.system(size:20, weight: .bold))
+                                .padding(20)
+                                Color.white
+                                    .frame(height: 5)
+                                    .frame(maxWidth: .infinity)
+                                HStack {
+                                    Text("Mittagessen")
+                                        .font(.system(size:20, weight: .bold))
+                                        .foregroundColor(.white)
+                                    Spacer()
+                                    Button("+") {
+                                        selectedMeal = "Mittagessen"
+                                    }
                                     .foregroundColor(.white)
-                                Spacer()
-                                Button("+") {
-                                    selectedMeal = "Mittagessen"
                                 }
-                                .foregroundColor(.white)
-                            }
-                            .padding(20)
-                            Color.white
-                                .frame(height: 5)
-                                .frame(maxWidth: .infinity)
-                            HStack {
-                                Text("Abendessen")
-                                    .font(.system(size:20, weight: .bold))
+                                .padding(20)
+                                Color.white
+                                    .frame(height: 5)
+                                    .frame(maxWidth: .infinity)
+                                HStack {
+                                    Text("Abendessen")
+                                        .font(.system(size:20, weight: .bold))
+                                        .foregroundColor(.white)
+                                    Spacer()
+                                    Button("+") {
+                                        selectedMeal = "Abendessen"
+                                    }
                                     .foregroundColor(.white)
-                                Spacer()
-                                Button("+") {
-                                    selectedMeal = "Abendessen"
                                 }
-                                .foregroundColor(.white)
-                            }
-                            .padding(20)
-                            Color.white
-                                .frame(height: 5)
-                                .frame(maxWidth: .infinity)
-                            HStack {
-                                Text("Snacks")
-                                    .font(.system(size:20, weight: .bold))
+                                .padding(20)
+                                Color.white
+                                    .frame(height: 5)
+                                    .frame(maxWidth: .infinity)
+                                HStack {
+                                    Text("Snacks")
+                                        .font(.system(size:20, weight: .bold))
+                                        .foregroundColor(.white)
+                                    Spacer()
+                                    Button("+") {
+                                        selectedMeal = "Snacks"
+                                    }
                                     .foregroundColor(.white)
-                                Spacer()
-                                Button("+") {
-                                    selectedMeal = "Snacks"
                                 }
-                                .foregroundColor(.white)
-                            }
-                            .padding(20)
-                        },
-                        alignment: .topLeading
-                    )
+                                .padding(20)
+                            },
+                            alignment: .topLeading
+                        )
+                }
             }
             .onAppear {
                 loadMeals()
@@ -415,6 +444,8 @@ struct ErgebnisView: View {
             ) {
                 EmptyView()
             }
+            .opacity(0)
+            .allowsHitTesting(false)
         }
     }
 }
@@ -461,10 +492,9 @@ struct FoodRowView: View {
                 let text = "\(name) x\(count) = \(kcal) kcal"
 
                 if let meal = selectedMeal {
-                    var todayKey: String {
-                        Date().formatted(date: .numeric, time: .omitted)
-                    }
-                    let today = Date().formatted(date: .numeric, time: .omitted)
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "yyyy-MM-dd"
+                    let today = formatter.string(from: Date())
                     var updated = mealsByDate[today] ?? [
                         "Frühstück": [],
                         "Mittagessen": [],
