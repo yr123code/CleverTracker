@@ -459,15 +459,31 @@ struct FoodRowView: View {
             Button("✓") {
                 let kcal = count * kcalPerUnit
                 let text = "\(name) x\(count) = \(kcal) kcal"
+
                 if let meal = selectedMeal {
-                    meals[meal, default: []].append(text)
+                    var todayKey: String {
+                        Date().formatted(date: .numeric, time: .omitted)
+                    }
+                    let today = Date().formatted(date: .numeric, time: .omitted)
+                    var updated = mealsByDate[today] ?? [
+                        "Frühstück": [],
+                        "Mittagessen": [],
+                        "Abendessen": [],
+                        "Snacks": []
+                    ]
+
+                    updated[meal, default: []].append(text)
+                    mealsByDate[today] = updated
+
+                    if let uid = Auth.auth().currentUser?.uid {
+                        Firestore.firestore().collection("users").document(uid).setData([
+                            "mealsByDate": mealsByDate
+                        ], merge: true)
+                    }
                 }
-                if let uid = Auth.auth().currentUser?.uid {
-                    Firestore.firestore().collection("users").document(uid).setData([
-                        "mealsByDate": mealsByDate
-                    ], merge: true)
-                }
+
                 selectedMeal = nil
+                count = 1
             }
             .foregroundColor(.green)
         }
