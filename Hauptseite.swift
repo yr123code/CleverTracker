@@ -454,6 +454,37 @@ struct AddFoodView: View {
     @Binding var selectedMeal: String?
     @Binding var meals: [String: [String]]
     @Binding var mealsByDate: [String: [String: [String]]]
+    @State private var searchText = ""
+
+    var allFoods: [(name: String, kcal: Int)] {
+        [
+            ("Banane", 100),
+            ("Reis (gekocht, Handvoll)", 130),
+            ("Hähnchenbrust (100g)", 165),
+            ("Walnüsse Eine Handvoll (30g)", 200),
+            ("Magerquark (100g)", 67),
+            ("Ei (M)", 75),
+            ("Avocado (halbe)", 120),
+            ("1 Teelöffel Butter", 40),
+            ("1 Teelöffel Olivenöl", 45),
+            ("Schokolade (Riegel)", 230),
+            ("Franzbrötchen 1 Brötchen (80g)", 280),
+            ("Butter 1 Aufstrich (10g)", 74),
+            ("Latte Macchiato 1 Glas (300ml)", 123),
+            ("Sesambrötchen 1 Brot (60g)", 172),
+            ("Sucuk 1 Wurst (80g)", 272)
+        ]
+    }
+
+    var filteredFoods: [(name: String, kcal: Int)] {
+        if searchText.isEmpty {
+            return allFoods
+        } else {
+            return allFoods.filter {
+                $0.name.lowercased().contains(searchText.lowercased())
+            }
+        }
+    }
 
     var body: some View {
         VStack(spacing: 20) {
@@ -461,13 +492,17 @@ struct AddFoodView: View {
                 .font(.largeTitle)
 
             List {
-                FoodRowView(name: "Banane", kcalPerUnit: 100, selectedMeal: $selectedMeal, meals: $meals, mealsByDate: $mealsByDate)
-                FoodRowView(name: "Reis (gekocht, Handvoll)", kcalPerUnit: 130, selectedMeal: $selectedMeal, meals: $meals, mealsByDate: $mealsByDate)
-                FoodRowView(name: "Hähnchenbrust (150g)", kcalPerUnit: 250, selectedMeal: $selectedMeal, meals: $meals, mealsByDate: $mealsByDate)
-                FoodRowView(name: "Brokkoli (Portion)", kcalPerUnit: 50, selectedMeal: $selectedMeal, meals: $meals, mealsByDate: $mealsByDate)
-                FoodRowView(name: "Avocado (halbe)", kcalPerUnit: 120, selectedMeal: $selectedMeal, meals: $meals, mealsByDate: $mealsByDate)
-                FoodRowView(name: "Schokolade (Riegel)", kcalPerUnit: 230, selectedMeal: $selectedMeal, meals: $meals, mealsByDate: $mealsByDate)
+                ForEach(filteredFoods, id: \.name) { food in
+                    FoodRowView(
+                        name: food.name,
+                        kcalPerUnit: food.kcal,
+                        selectedMeal: $selectedMeal,
+                        meals: $meals,
+                        mealsByDate: $mealsByDate
+                    )
+                }
             }
+            .searchable(text: $searchText, prompt: "Lebensmittel suchen")
         }
     }
 }

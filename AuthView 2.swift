@@ -1,6 +1,6 @@
+//Login, Regrerstrierung, Daten laden und speichern
 import SwiftUI
 import FirebaseAuth
-
 struct AuthView: View {
     
     @EnvironmentObject var authVM: AuthViewModel
