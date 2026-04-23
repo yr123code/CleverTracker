@@ -164,12 +164,11 @@ struct Hauptseite: View {
                         }
                     }
                 }
+                // Navigation zum ErgebnisView.
+                .navigationDestination(isPresented: $navigateToResult) {
+                    ErgebnisView(calories: resultCalories)
+                }
             }
-        }
-        // Navigation zum ErgebnisView.
-        .navigationDestination(isPresented: $navigateToResult) {
-            ErgebnisView(calories: resultCalories)
-                .environmentObject(authVM)
         }
         .background(Color.blue.ignoresSafeArea())
     }
