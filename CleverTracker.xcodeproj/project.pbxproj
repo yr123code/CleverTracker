@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B22B3B682F9A616D009B60BE /* ErgebnisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22B3B672F9A616D009B60BE /* ErgebnisView.swift */; };
+		B22B3B6A2F9A616D009B60BE /* AddFoodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22B3B692F9A616D009B60BE /* AddFoodView.swift */; };
+		B22B3B6C2F9A616D009B60BE /* FoodRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22B3B6B2F9A616D009B60BE /* FoodRowView.swift */; };
+		B22B3B6E2F9A616D009B60BE /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22B3B6D2F9A616D009B60BE /* InfoView.swift */; };
+		B22B3B702F9A616D009B60BE /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22B3B6F2F9A616D009B60BE /* HistoryView.swift */; };
+		B22B3B722F9A616D009B60BE /* InfoDeficitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22B3B712F9A616D009B60BE /* InfoDeficitView.swift */; };
 		B27D1FC22F84EE500007B278 /* AuthView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27D1FBD2F84EE500007B278 /* AuthView 2.swift */; };
 		B27D1FC32F84EE500007B278 /* CleverTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27D1FBE2F84EE500007B278 /* CleverTracker.swift */; };
 		B27D1FC42F84EE500007B278 /* Hauptseite.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27D1FBF2F84EE500007B278 /* Hauptseite.swift */; };
@@ -20,6 +26,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B22B3B672F9A616D009B60BE /* ErgebnisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErgebnisView.swift; sourceTree = "<group>"; };
+		B22B3B692F9A616D009B60BE /* AddFoodView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFoodView.swift; sourceTree = "<group>"; };
+		B22B3B6B2F9A616D009B60BE /* FoodRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodRowView.swift; sourceTree = "<group>"; };
+		B22B3B6D2F9A616D009B60BE /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
+		B22B3B6F2F9A616D009B60BE /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		B22B3B712F9A616D009B60BE /* InfoDeficitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoDeficitView.swift; sourceTree = "<group>"; };
 		B27D1FBB2F84EE500007B278 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B27D1FBC2F84EE500007B278 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		B27D1FBD2F84EE500007B278 /* AuthView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AuthView 2.swift"; sourceTree = "<group>"; };
@@ -56,6 +68,12 @@
 				B27D1FC12F84EE500007B278 /* RootView.swift */,
 				B2E38EDC2F8A5DAF00B5DF6A /* GoogleService-Info.plist */,
 				B2E38EDE2F8A5DD700B5DF6A /* CleverTracker.app */,
+				B22B3B672F9A616D009B60BE /* ErgebnisView.swift */,
+				B22B3B692F9A616D009B60BE /* AddFoodView.swift */,
+				B22B3B6B2F9A616D009B60BE /* FoodRowView.swift */,
+				B22B3B6D2F9A616D009B60BE /* InfoView.swift */,
+				B22B3B6F2F9A616D009B60BE /* HistoryView.swift */,
+				B22B3B712F9A616D009B60BE /* InfoDeficitView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -138,11 +156,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B22B3B6A2F9A616D009B60BE /* AddFoodView.swift in Sources */,
 				B27D1FC22F84EE500007B278 /* AuthView 2.swift in Sources */,
 				B27D1FC32F84EE500007B278 /* CleverTracker.swift in Sources */,
+				B22B3B722F9A616D009B60BE /* InfoDeficitView.swift in Sources */,
 				B27D1FC42F84EE500007B278 /* Hauptseite.swift in Sources */,
 				B27D1FC52F84EE500007B278 /* RootView.swift in Sources */,
+				B22B3B702F9A616D009B60BE /* HistoryView.swift in Sources */,
+				B22B3B6C2F9A616D009B60BE /* FoodRowView.swift in Sources */,
+				B22B3B682F9A616D009B60BE /* ErgebnisView.swift in Sources */,
 				B27D1FC62F84EE500007B278 /* HomeView.swift in Sources */,
+				B22B3B6E2F9A616D009B60BE /* InfoView.swift in Sources */,
 				B27D1FC72F84EE500007B278 /* AuthView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

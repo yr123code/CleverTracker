@@ -4,17 +4,23 @@ import Combine
 import FirebaseAuth
 import FirebaseFirestore
 
+// Verwaltet den Login-Zustand und den Zugriff auf Firebase Auth + Firestore.
 class AuthViewModel: ObservableObject {
     
+    // Aktuell angemeldeter Firebase-Nutzer.
     @Published var user: User?
+    // Fehlertext für Login- oder Registrierungsprobleme.
     @Published var errorMessage: String = ""
     
+    // Firestore-Referenz für das Speichern und Laden von Nutzerdaten.
     let db = Firestore.firestore()
     
     init() {
+        // Übernimmt beim App-Start einen eventuell bereits eingeloggten Nutzer.
         self.user = Auth.auth().currentUser
     }
     
+    // Erstellt einen neuen Nutzer in Firebase Authentication.
     func register(email: String, password: String) {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             
@@ -29,6 +35,7 @@ class AuthViewModel: ObservableObject {
         }
     }
     
+    // Meldet einen bestehenden Nutzer in Firebase Authentication an.
     func login(email: String, password: String) {
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             
@@ -43,6 +50,7 @@ class AuthViewModel: ObservableObject {
         }
     }
     
+    // Meldet den aktuellen Nutzer ab und leert den lokalen Login-Zustand.
     func logout() {
         try? Auth.auth().signOut()
         self.user = nil
@@ -50,6 +58,7 @@ class AuthViewModel: ObservableObject {
     
     // MARK: - Firestore Speichern
     
+    // Speichert die berechneten Nutzerdaten in Firestore unter der User-ID.
     func saveUserData(weight: Double, height: Double, age: Int, gender: String, activity: Double, calories: Double) {
         
         guard let uid = user?.uid else { return }
@@ -70,6 +79,7 @@ class AuthViewModel: ObservableObject {
     
     // MARK: - Firestore Laden
     
+    // Lädt bereits gespeicherte Nutzerdaten aus Firestore.
     func loadUserData(completion: @escaping ([String: Any]?) -> Void) {
         
         guard let uid = user?.uid else { return }

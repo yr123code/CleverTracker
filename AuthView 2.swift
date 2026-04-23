@@ -1,10 +1,14 @@
 //Login, Regrerstrierung, Daten laden und speichern
 import SwiftUI
 import FirebaseAuth
+
+// Login- und Registrierungsmaske für den Nutzer.
 struct AuthView: View {
     
+    // Zugriff auf die zentrale Auth-Logik.
     @EnvironmentObject var authVM: AuthViewModel
     
+    // Eingaben aus den Textfeldern.
     @State private var email = ""
     @State private var password = ""
     
@@ -35,6 +39,7 @@ struct AuthView: View {
                         .foregroundColor(.red)
                 }
                 
+                // Startet den Login über das ViewModel.
                 Button("Login") {
                     authVM.login(email: email, password: password)
                 }
@@ -42,6 +47,7 @@ struct AuthView: View {
                 .tint(Color.white)
                 .foregroundStyle(.black)
                 
+                // Erstellt einen neuen Account über das ViewModel.
                 Button("Registrieren") {
                     authVM.register(email: email, password: password)
                 }
