@@ -76,6 +76,34 @@ class AuthViewModel: ObservableObject {
             }
         }
     }
+
+    // Speichert bereits eingegebene Zwischenschritte des Onboardings in Firebase.
+    func saveOnboardingProgress(
+        weight: Double?,
+        height: Double?,
+        age: Int?,
+        gender: String?,
+        activity: Double?,
+        calories: Double?
+    ) {
+        guard let uid = user?.uid else { return }
+
+        // Baut nur die Werte ins Dictionary ein, die bereits vorhanden sind.
+        var data: [String: Any] = [:]
+
+        if let weight { data["weight"] = weight }
+        if let height { data["height"] = height }
+        if let age { data["age"] = age }
+        if let gender { data["gender"] = gender }
+        if let activity { data["activityLevel"] = activity }
+        if let calories, calories > 0 { data["calories"] = calories }
+
+        // Wenn noch keine Daten vorhanden sind, wird nichts gespeichert.
+        guard !data.isEmpty else { return }
+
+        // Speichert die Teildaten in das Nutzerdokument, ohne bestehende Felder zu überschreiben.
+        db.collection("users").document(uid).setData(data, merge: true)
+    }
     
     // MARK: - Firestore Laden
     
