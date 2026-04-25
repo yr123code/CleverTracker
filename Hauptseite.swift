@@ -20,7 +20,7 @@ struct Hauptseite: View {
         case height
         case age
     }
-    
+
     // Eingaben für den Kalorienrechner.
     @State private var weight = ""
     @State private var height = ""
@@ -39,16 +39,16 @@ struct Hauptseite: View {
     @State private var currentAnimatedImageIndex = 0
     // Steuert die Ein- und Ausblendung des unteren Bildes.
     @State private var animatedImageOpacity = 1.0
-    
+
     // Ergebnis und Navigation in die Ergebnisansicht.
     @State private var resultCalories: Double = 0
     @State private var navigateToResult = false
-    
+
     // Steuert das Info-Sheet für das Aktivitätslevel.
     @State private var showInfo = false
     // Speichert, welcher Schritt aktuell angezeigt wird.
     @State private var currentStep: Step = .weight
-    
+
     // Zugriff auf Auth-Status und Firestore-Funktionen.
     @EnvironmentObject var authVM: AuthViewModel
     // Steuert, welches Eingabefeld gerade den Fokus hat.
@@ -140,7 +140,7 @@ struct Hauptseite: View {
                         }
                     }
                     Spacer()
-                    
+
                     // CALCULATOR
                     VStack(spacing:18,) {
                         if showsFinalImages {
@@ -445,7 +445,7 @@ struct Hauptseite: View {
             }
         }
     }
-    
+
     // Meldet den aktuellen Nutzer ab und setzt den lokalen Auth-Zustand zurück.
     func signOut() {
         do {
