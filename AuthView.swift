@@ -97,7 +97,7 @@ class AuthViewModel: ObservableObject {
         if let gender { data["gender"] = gender }
         if let activity { data["activityLevel"] = activity }
         if let calories, calories > 0 { data["calories"] = calories }
-
+        
         // Wenn noch keine Daten vorhanden sind, wird nichts gespeichert.
         guard !data.isEmpty else { return }
 
